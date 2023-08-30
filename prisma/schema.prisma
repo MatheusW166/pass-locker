@@ -18,6 +18,8 @@ model User {
   name        String
   email       String       @unique
   password    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   Credentials Credential[]
   Notes       Note[]
   Cards       Card[]
@@ -26,22 +28,26 @@ model User {
 }
 
 model Credential {
-  title    String
-  userId   Int
-  url      String
-  username String
-  password String
-  User     User   @relation(fields: [userId], references: [id])
+  title     String
+  userId    Int
+  url       String
+  username  String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
 
   @@id([title, userId])
   @@map("credentials")
 }
 
 model Note {
-  title  String
-  userId Int
-  text   String
-  User   User   @relation(fields: [userId], references: [id])
+  title     String
+  userId    Int
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
 
   @@id([title, userId])
   @@map("notes")
@@ -56,8 +62,9 @@ model Card {
   displayName String
   isVirtual   Boolean
   type        CardType
-
-  User User @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  User        User     @relation(fields: [userId], references: [id])
 
   @@id([title, userId])
   @@map("cards")
