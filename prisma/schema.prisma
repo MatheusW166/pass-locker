@@ -6,3 +6,59 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum CardType {
+  CREDIT
+  DEBIT
+  BOTH
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  password    String
+  Credentials Credential[]
+  Notes       Note[]
+  Cards       Card[]
+
+  @@map("users")
+}
+
+model Credential {
+  title    String
+  userId   Int
+  url      String
+  username String
+  password String
+  User     User   @relation(fields: [userId], references: [id])
+
+  @@id([title, userId])
+  @@map("credentials")
+}
+
+model Note {
+  title  String
+  userId Int
+  text   String
+  User   User   @relation(fields: [userId], references: [id])
+
+  @@id([title, userId])
+  @@map("notes")
+}
+
+model Card {
+  title       String
+  userId      Int
+  number      String
+  code        Int
+  expDate     DateTime
+  displayName String
+  isVirtual   Boolean
+  type        CardType
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@id([title, userId])
+  @@map("cards")
+}
