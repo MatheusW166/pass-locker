@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,18 +18,19 @@ export class AuthService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
-    const userFound = await this.usersService.findByEmail(createUserDto.email);
+    const { email, password } = createUserDto;
+    const userFound = await this.usersService.findByEmail(email);
 
     if (userFound) {
       throw new ConflictException();
     }
 
-    //TODO: encrypt password
-
-    return this.usersService.create(createUserDto);
+    const hashedPass = bcrypt.hashSync(password, 10);
+    return this.usersService.create({ ...createUserDto, password: hashedPass });
   }
 
-  async signIn(email: string, password: string) {
+  async signIn(signInDto: SignInDto) {
+    const { email, password } = signInDto;
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
