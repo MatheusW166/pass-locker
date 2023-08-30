@@ -28,6 +28,7 @@ model User {
 }
 
 model Credential {
+  id        Int      @id @default(autoincrement())
   title     String
   userId    Int
   url       String
@@ -37,11 +38,12 @@ model Credential {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
 
-  @@id([title, userId])
+  @@unique([title, userId])
   @@map("credentials")
 }
 
 model Note {
+  id        Int      @id @default(autoincrement())
   title     String
   userId    Int
   text      String
@@ -49,11 +51,12 @@ model Note {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
 
-  @@id([title, userId])
+  @@unique([title, userId])
   @@map("notes")
 }
 
 model Card {
+  id          Int      @id @default(autoincrement())
   title       String
   userId      Int
   number      String
@@ -66,6 +69,6 @@ model Card {
   updatedAt   DateTime @updatedAt
   User        User     @relation(fields: [userId], references: [id])
 
-  @@id([title, userId])
+  @@unique([title, userId])
   @@map("cards")
 }
