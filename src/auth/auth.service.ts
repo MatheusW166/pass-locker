@@ -4,11 +4,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDto, SignUpDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -17,16 +16,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto) {
-    const { email, password } = createUserDto;
+  async signUp(signUpDto: SignUpDto) {
+    const { email, password } = signUpDto;
     const userFound = await this.usersService.findByEmail(email);
 
-    if (userFound) {
-      throw new ConflictException();
-    }
+    if (userFound) throw new ConflictException();
 
     const hashedPass = bcrypt.hashSync(password, 10);
-    return this.usersService.create({ ...createUserDto, password: hashedPass });
+    return this.usersService.create({ ...signUpDto, password: hashedPass });
   }
 
   async signIn(signInDto: SignInDto) {
@@ -42,6 +39,14 @@ export class AuthService {
     }
 
     const payload = { userId: user.id };
-    return this.jwtService.sign(payload);
+    return this.jwtService.signAsync(payload);
+  }
+
+  async verifyJwt(token: string) {
+    try {
+      return await this.jwtService.verifyAsync(token);
+    } catch (_) {
+      throw new UnauthorizedException();
+    }
   }
 }

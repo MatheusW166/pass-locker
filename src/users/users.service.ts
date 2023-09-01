@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -7,27 +7,27 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
-  findAll() {
-    return `This action returns all users`;
+  async create(createUserDto: CreateUserDto) {
+    return this.usersRepository.create(createUserDto);
   }
 
   async findByEmail(email: string) {
-    return { id: 1, password: '123' };
+    return this.usersRepository.findByEmail(email);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findByIdOrThrow(id: number) {
+    const user = this.usersRepository.findById(id);
+    if (!user) throw new NotFoundException();
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.findByIdOrThrow(id);
+    return this.usersRepository.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    await this.findByIdOrThrow(id);
+    return this.usersRepository.remove(id);
   }
 }
