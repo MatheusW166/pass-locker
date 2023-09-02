@@ -23,7 +23,13 @@ export class AuthService {
     if (userFound) throw new ConflictException();
 
     const hashedPass = bcrypt.hashSync(password, 10);
-    return this.usersService.create({ ...signUpDto, password: hashedPass });
+    const user = await this.usersService.create({
+      ...signUpDto,
+      password: hashedPass,
+    });
+
+    delete user.password;
+    return user;
   }
 
   async signIn(signInDto: SignInDto) {
@@ -39,7 +45,8 @@ export class AuthService {
     }
 
     const payload = { userId: user.id };
-    return this.jwtService.signAsync(payload);
+    const token = await this.jwtService.signAsync(payload);
+    return { token };
   }
 
   async verifyJwt(token: string) {
