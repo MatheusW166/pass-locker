@@ -53,7 +53,7 @@ export class AuthService {
     try {
       return await this.jwtService.verifyAsync(token);
     } catch (_) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid token');
     }
   }
 }

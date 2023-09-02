@@ -19,4 +19,8 @@ export class UsersService {
     if (!user) throw new NotFoundException();
     return user;
   }
+
+  async findById(id: number) {
+    return this.usersRepository.findById(id);
+  }
 }
