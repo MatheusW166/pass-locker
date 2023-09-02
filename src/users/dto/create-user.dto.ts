@@ -1,26 +1,15 @@
-import { Transform } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsStrongPassword,
-} from 'class-validator';
+import { IsEmail, IsStrongPassword } from 'class-validator';
+import { ValidateString } from '@/decorators/validation';
 
 export class CreateUserDto {
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
+  @ValidateString()
   name: string;
 
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
+  @ValidateString()
   @IsEmail()
   email: string;
 
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
+  @ValidateString()
   @IsStrongPassword({
     minLength: 10,
     minLowercase: 1,
