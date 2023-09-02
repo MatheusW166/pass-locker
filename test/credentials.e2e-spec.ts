@@ -73,6 +73,47 @@ describe('Credentials (e2e)', () => {
     });
 
     describe('When token is valid', () => {
+      it('Should respond 201 and create a credential', async () => {
+        const server = request(app.getHttpServer());
+        const [token] = await new AuthHelper(server).generateValidToken();
+        const credential = new CredentialFactory().build();
+
+        const response = await server
+          .post('/credentials')
+          .send(credential)
+          .set('Authorization', token)
+          .expect(201);
+
+        const credentials = await prisma.credential.findMany({});
+        expect(credentials).toHaveLength(1);
+        expect(prismaHelper.stringfyDates(credentials[0])).toEqual(
+          response.body,
+        );
+      });
+
+      it('Should respond 201 and allow two users to create the same credential', async () => {
+        const server = request(app.getHttpServer());
+        const authHelper = new AuthHelper(server);
+        const [token1] = await authHelper.generateValidToken();
+        const [token2] = await authHelper.generateValidToken();
+        const credential = new CredentialFactory().build();
+
+        await server
+          .post('/credentials')
+          .send(credential)
+          .set('Authorization', token1)
+          .expect(201);
+
+        await server
+          .post('/credentials')
+          .send(credential)
+          .set('Authorization', token2)
+          .expect(201);
+
+        const credentials = await prisma.credential.findMany();
+        expect(credentials).toHaveLength(2);
+      });
+
       describe('Bad formatted body', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
@@ -169,47 +210,6 @@ describe('Credentials (e2e)', () => {
       });
 
       describe('Right formatted body', () => {
-        it('Should respond 201 and create a credential', async () => {
-          const server = request(app.getHttpServer());
-          const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
-
-          const response = await server
-            .post('/credentials')
-            .send(credential)
-            .set('Authorization', token)
-            .expect(201);
-
-          const credentials = await prisma.credential.findMany({});
-          expect(credentials).toHaveLength(1);
-          expect(prismaHelper.stringfyDates(credentials[0])).toEqual(
-            response.body,
-          );
-        });
-
-        it('Should respond 201 and allow two users to create the same credential', async () => {
-          const server = request(app.getHttpServer());
-          const authHelper = new AuthHelper(server);
-          const [token1] = await authHelper.generateValidToken();
-          const [token2] = await authHelper.generateValidToken();
-          const credential = new CredentialFactory().build();
-
-          await server
-            .post('/credentials')
-            .send(credential)
-            .set('Authorization', token1)
-            .expect(201);
-
-          await server
-            .post('/credentials')
-            .send(credential)
-            .set('Authorization', token2)
-            .expect(201);
-
-          const credentials = await prisma.credential.findMany();
-          expect(credentials).toHaveLength(2);
-        });
-
         it('Should respond 409 when credential already exists for a given user', async () => {
           const server = request(app.getHttpServer());
           const [token, user] = await new AuthHelper(
