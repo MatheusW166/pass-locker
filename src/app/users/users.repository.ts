@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto } from './dto';
 import { PrismaService } from '@/app/prisma/prisma.service';
 
 @Injectable()
@@ -16,16 +16,5 @@ export class UsersRepository {
 
   findById(id: number) {
     return this.prismaService.user.findUnique({ where: { id } });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prismaService.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
-  }
-
-  remove(id: number) {
-    return this.prismaService.user.delete({ where: { id } });
   }
 }

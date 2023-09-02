@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AuthModule } from './app/auth/auth.module';
+import { AuthModule } from '@app/auth/auth.module';
 import { UsersModule } from '@app/users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
