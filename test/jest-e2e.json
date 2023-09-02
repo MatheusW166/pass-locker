@@ -12,6 +12,7 @@
   },
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/../src/$1",
-    "^@test/(.*)$": "<rootDir>/../test/$1"
+    "^@test/(.*)$": "<rootDir>/../test/$1",
+    "^@app/(.*)$": "<rootDir>/../src/app/$1"
   }
 }

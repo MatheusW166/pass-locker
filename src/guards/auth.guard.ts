@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { AuthService } from '@/auth/auth.service';
+import { AuthService } from '@/app/auth/auth.service';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@/decorators/route';
 
