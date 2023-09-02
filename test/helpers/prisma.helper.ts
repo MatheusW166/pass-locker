@@ -23,4 +23,12 @@ export class PrismaHelper {
       updatedAt: props.updatedAt.toISOString(),
     };
   }
+
+  static parseDates(props: any & { createdAt: string; updatedAt: string }) {
+    return {
+      ...props,
+      createdAt: new Date(props.createdAt),
+      updatedAt: new Date(props.updatedAt),
+    };
+  }
 }

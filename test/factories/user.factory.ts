@@ -9,7 +9,7 @@ export class UserFactory extends PartialType(CreateUserDto) {
     super();
   }
 
-  buildUser(props?: Partial<CreateUserDto>) {
+  build(props?: Partial<CreateUserDto>) {
     this.name = props?.name ?? faker.person.fullName();
     this.email = props?.email ?? faker.internet.email();
     this.password = props?.password ?? this.generateStrongPassword();
