@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
+import { CardsRepository } from './cards.repository';
+import Cryptr from 'cryptr';
 
 @Injectable()
 export class CardsService {
-  create(createCardDto: CreateCardDto) {
-    return 'This action adds a new card';
+  constructor(private readonly cardsRepository: CardsRepository) {}
+
+  async create(createCardDto: CreateCardDto, userId: number) {
+    const card = await this.cardsRepository.findByTitleAndUserId(
+      createCardDto.title,
+      userId,
+    );
+    if (card) throw new ConflictException();
+
+    const { code, number } = createCardDto;
+    const crypt = new Cryptr(process.env.JWT_SECRET);
+    createCardDto = {
+      ...createCardDto,
+      code: crypt.encrypt(code),
+      number: crypt.encrypt(number),
+    };
+    return this.cardsRepository.create(createCardDto, userId);
   }
 
-  findAll() {
-    return `This action returns all cards`;
+  async findByIdOrThrow(id: number, userId: number) {
+    const card = await this.cardsRepository.findById(id);
+    if (!card) throw new NotFoundException();
+    if (card.userId !== userId) throw new ForbiddenException();
+
+    const crypt = new Cryptr(process.env.JWT_SECRET);
+    const { code, number } = card;
+    return {
+      ...card,
+      code: crypt.decrypt(code),
+      number: crypt.decrypt(number),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} card`;
-  }
-
-  update(id: number, updateCardDto: UpdateCardDto) {
-    return `This action updates a #${id} card`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} card`;
+  async remove(id: number, userId: number) {
+    await this.findByIdOrThrow(id, userId);
+    return this.cardsRepository.remove(id);
   }
 }

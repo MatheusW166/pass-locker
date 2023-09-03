@@ -62,7 +62,7 @@ model Card {
   title       String
   userId      Int
   number      String
-  code        Int
+  code        String
   expDate     DateTime
   displayName String
   isVirtual   Boolean
