@@ -9,7 +9,6 @@ export class AppRepository {
     await Promise.all([
       this.prismaService.credential.deleteMany({ where: { userId } }),
       this.prismaService.wiFi.deleteMany({ where: { userId } }),
-      this.prismaService.license.deleteMany({ where: { userId } }),
       this.prismaService.note.deleteMany({ where: { userId } }),
       this.prismaService.card.deleteMany({ where: { userId } }),
     ]);

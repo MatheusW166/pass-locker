@@ -8,7 +8,6 @@ import { CredentialsModule } from '@app/credentials/credentials.module';
 import { NotesModule } from '@app/notes/notes.module';
 import { CardsModule } from '@app/cards/cards.module';
 import { WifisModule } from '@app/wifis/wifis.module';
-import { LicensesModule } from '@app/licenses/licenses.module';
 import { AppService } from './app.service';
 import { AppRepository } from './app.repository';
 import { PrismaModule } from './app/prisma/prisma.module';
@@ -21,7 +20,6 @@ import { PrismaModule } from './app/prisma/prisma.module';
     NotesModule,
     CardsModule,
     WifisModule,
-    LicensesModule,
     PrismaModule,
   ],
   controllers: [AppController],

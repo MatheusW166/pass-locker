@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helpers/auth.helper';
 import { WifiFactory } from './factories/wifi.factory';
 
-describe('Notes (e2e)', () => {
+describe('WifisController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let prismaHelper: PrismaHelper;

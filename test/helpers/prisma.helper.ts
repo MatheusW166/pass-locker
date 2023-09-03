@@ -6,7 +6,6 @@ export class PrismaHelper {
   async clean() {
     await Promise.all([
       this.prismaService.card.deleteMany(),
-      this.prismaService.license.deleteMany(),
       this.prismaService.wiFi.deleteMany(),
       this.prismaService.credential.deleteMany(),
       this.prismaService.note.deleteMany(),

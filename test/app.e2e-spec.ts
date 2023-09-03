@@ -10,6 +10,7 @@ import { CardFactory } from './factories/card.factory';
 import { NoteFactory } from './factories/note.factory';
 import { UserFactory } from './factories/user.factory';
 import { faker } from '@faker-js/faker';
+import { WifiFactory } from './factories/wifi.factory';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -54,6 +55,7 @@ describe('AppController (e2e)', () => {
       await new CredentialFactory().build().persist(prisma, persistedUser.id);
       await new CardFactory().build().persist(prisma, persistedUser.id);
       await new NoteFactory().build().persist(prisma, persistedUser.id);
+      await new WifiFactory().build().persist(prisma, persistedUser.id);
 
       await server
         .post('/erase')
@@ -64,7 +66,6 @@ describe('AppController (e2e)', () => {
       const credentials = await prisma.credential.findMany();
       const cards = await prisma.card.findMany();
       const notes = await prisma.note.findMany();
-      const licenses = await prisma.license.findMany();
       const wifis = await prisma.wiFi.findMany();
       const users = await prisma.user.findMany();
 
@@ -73,7 +74,6 @@ describe('AppController (e2e)', () => {
       expect(notes).toHaveLength(0);
       expect(users).toHaveLength(0);
       expect(wifis).toHaveLength(0);
-      expect(licenses).toHaveLength(0);
     });
 
     it('Should respond 401 if password is wrong', async () => {
@@ -86,6 +86,7 @@ describe('AppController (e2e)', () => {
       await new CredentialFactory().build().persist(prisma, persistedUser.id);
       await new CardFactory().build().persist(prisma, persistedUser.id);
       await new NoteFactory().build().persist(prisma, persistedUser.id);
+      await new WifiFactory().build().persist(prisma, persistedUser.id);
 
       await server
         .post('/erase')
@@ -97,15 +98,13 @@ describe('AppController (e2e)', () => {
       const cards = await prisma.card.findMany();
       const notes = await prisma.note.findMany();
       const users = await prisma.user.findMany();
-      // const licenses = await prisma.license.findMany();
-      // const wifis = await prisma.wiFi.findMany();
+      const wifis = await prisma.wiFi.findMany();
 
       expect(credentials).toHaveLength(1);
       expect(cards).toHaveLength(1);
       expect(notes).toHaveLength(1);
       expect(users).toHaveLength(1);
-      // expect(wifis).toHaveLength(1);
-      // expect(licenses).toHaveLength(1);
+      expect(wifis).toHaveLength(1);
     });
   });
 });

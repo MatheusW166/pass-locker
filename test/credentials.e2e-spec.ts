@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helpers/auth.helper';
 import { CredentialFactory } from './factories/credential.factory';
 
-describe('Credentials (e2e)', () => {
+describe('CredentialsController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let prismaHelper: PrismaHelper;

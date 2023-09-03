@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helpers/auth.helper';
 import { NoteFactory } from './factories/note.factory';
 
-describe('Notes (e2e)', () => {
+describe('NotesController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let prismaHelper: PrismaHelper;
