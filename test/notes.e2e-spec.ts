@@ -7,9 +7,9 @@ import { PrismaHelper } from './helpers/prisma.helper';
 import { faker } from '@faker-js/faker';
 import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helpers/auth.helper';
-import { CredentialFactory } from './factories/credential.factory';
+import { NoteFactory } from './factories/note.factory';
 
-describe('Credentials (e2e)', () => {
+describe('Notes (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let prismaHelper: PrismaHelper;
@@ -43,7 +43,7 @@ describe('Credentials (e2e)', () => {
     describe('When token is invalid', () => {
       it('Should respond 401 when token is missing', async () => {
         const response = await request(app.getHttpServer())
-          .post('/credentials')
+          .post('/notes')
           .expect(401);
 
         expect(response.body.message).toEqual('No token found');
@@ -54,7 +54,7 @@ describe('Credentials (e2e)', () => {
           length: { min: 60, max: 200 },
         });
         const response = await request(app.getHttpServer())
-          .post('/credentials')
+          .post('/notes')
           .set('Authorization', `Bearer ${invalidToken}`)
           .expect(401);
 
@@ -64,7 +64,7 @@ describe('Credentials (e2e)', () => {
       it('Should respond 401 when there is no user for the given token', async () => {
         const token = AuthHelper.generateRandomToken(jwtService);
         const response = await request(app.getHttpServer())
-          .post('/credentials')
+          .post('/notes')
           .set('Authorization', token)
           .expect(401);
 
@@ -73,58 +73,56 @@ describe('Credentials (e2e)', () => {
     });
 
     describe('When token is valid', () => {
-      it('Should respond 201 and create a credential', async () => {
+      it('Should respond 201 and create a note', async () => {
         const server = request(app.getHttpServer());
         const [token] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const note = new NoteFactory().build();
 
         const response = await server
-          .post('/credentials')
-          .send(credential)
+          .post('/notes')
+          .send(note)
           .set('Authorization', token)
           .expect(201);
 
-        const credentials = await prisma.credential.findMany({});
-        expect(credentials).toHaveLength(1);
-        expect(prismaHelper.stringfyDates(credentials[0])).toEqual(
-          response.body,
-        );
+        const notes = await prisma.note.findMany({});
+        expect(notes).toHaveLength(1);
+        expect(prismaHelper.stringfyDates(notes[0])).toEqual(response.body);
       });
 
-      it('Should respond 201 and allow two users to create the same credential', async () => {
+      it('Should respond 201 and allow two users to create the same note', async () => {
         const server = request(app.getHttpServer());
         const authHelper = new AuthHelper(server);
         const [token1] = await authHelper.generateValidToken();
         const [token2] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
+        const note = new NoteFactory().build();
 
         await server
-          .post('/credentials')
-          .send(credential)
+          .post('/notes')
+          .send(note)
           .set('Authorization', token1)
           .expect(201);
 
         await server
-          .post('/credentials')
-          .send(credential)
+          .post('/notes')
+          .send(note)
           .set('Authorization', token2)
           .expect(201);
 
-        const credentials = await prisma.credential.findMany();
-        expect(credentials).toHaveLength(2);
+        const notes = await prisma.note.findMany();
+        expect(notes).toHaveLength(2);
       });
 
       describe('Bad formatted body', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const note = new NoteFactory().build();
 
-          delete credential.title;
+          delete note.title;
 
           const response = await server
-            .post('/credentials')
-            .send(credential)
+            .post('/notes')
+            .send(note)
             .set('Authorization', token)
             .expect(400);
 
@@ -134,98 +132,51 @@ describe('Credentials (e2e)', () => {
               'title should not be empty',
             ]),
           );
-          const credentials = await prisma.credential.findMany();
-          expect(credentials).toHaveLength(0);
+          const notes = await prisma.note.findMany();
+          expect(notes).toHaveLength(0);
         });
 
-        it('Should respond 400 when username is missing', async () => {
+        it('Should respond 400 when text is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const note = new NoteFactory().build();
 
-          delete credential.username;
+          delete note.text;
 
           const response = await server
-            .post('/credentials')
-            .send(credential)
+            .post('/notes')
+            .send(note)
             .set('Authorization', token)
             .expect(400);
 
           expect(response.body.message).toEqual(
             expect.arrayContaining([
-              'username must be a string',
-              'username should not be empty',
+              'text must be a string',
+              'text should not be empty',
             ]),
           );
-          const credentials = await prisma.credential.findMany();
-          expect(credentials).toHaveLength(0);
-        });
-
-        it('Should respond 400 when url is missing', async () => {
-          const server = request(app.getHttpServer());
-          const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
-
-          delete credential.url;
-
-          const response = await server
-            .post('/credentials')
-            .send(credential)
-            .set('Authorization', token)
-            .expect(400);
-
-          expect(response.body.message).toEqual(
-            expect.arrayContaining([
-              'url must be a string',
-              'url should not be empty',
-              'url must be a URL address',
-            ]),
-          );
-          const credentials = await prisma.credential.findMany();
-          expect(credentials).toHaveLength(0);
-        });
-
-        it('Should respond 400 when password is missing', async () => {
-          const server = request(app.getHttpServer());
-          const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
-
-          delete credential.password;
-
-          const response = await server
-            .post('/credentials')
-            .send(credential)
-            .set('Authorization', token)
-            .expect(400);
-
-          expect(response.body.message).toEqual(
-            expect.arrayContaining([
-              'password must be a string',
-              'password should not be empty',
-            ]),
-          );
-          const credentials = await prisma.credential.findMany();
-          expect(credentials).toHaveLength(0);
+          const notes = await prisma.note.findMany();
+          expect(notes).toHaveLength(0);
         });
       });
 
       describe('Right formatted body', () => {
-        it('Should respond 409 when credential already exists for a given user', async () => {
+        it('Should respond 409 when note already exists for a given user', async () => {
           const server = request(app.getHttpServer());
           const [token, user] = await new AuthHelper(
             server,
           ).generateValidToken();
-          const credential = new CredentialFactory().build();
-          await credential.persist(prisma, user.id);
+          const note = new NoteFactory().build();
+          await note.persist(prisma, user.id);
 
           await server
-            .post('/credentials')
-            .send(credential)
+            .post('/notes')
+            .send(note)
             .set('Authorization', token)
             .expect(409);
 
-          const credentials = await prisma.credential.findMany({});
-          expect(credentials).toHaveLength(1);
+          const notes = await prisma.note.findMany({});
+          expect(notes).toHaveLength(1);
         });
       });
     });
@@ -235,7 +186,7 @@ describe('Credentials (e2e)', () => {
     describe('When token is invalid', () => {
       it('Should respond 401 when token is missing', async () => {
         const response = await request(app.getHttpServer())
-          .get(`/credentials/1`)
+          .get(`/notes/1`)
           .expect(401);
 
         expect(response.body.message).toEqual('No token found');
@@ -246,7 +197,7 @@ describe('Credentials (e2e)', () => {
           length: { min: 60, max: 200 },
         });
         const response = await request(app.getHttpServer())
-          .get('/credentials/1')
+          .get('/notes/1')
           .set('Authorization', `Bearer ${invalidToken}`)
           .expect(401);
 
@@ -256,7 +207,7 @@ describe('Credentials (e2e)', () => {
       it('Should respond 401 when there is no user for the given token', async () => {
         const token = AuthHelper.generateRandomToken(jwtService);
         const response = await request(app.getHttpServer())
-          .get('/credentials/1')
+          .get('/notes/1')
           .set('Authorization', token)
           .expect(401);
 
@@ -265,46 +216,40 @@ describe('Credentials (e2e)', () => {
     });
 
     describe('When token is valid', () => {
-      it('Should respond 200 and the user credential', async () => {
+      it('Should respond 200 and the user note', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, user.id);
+        const note = await new NoteFactory().build().persist(prisma, user.id);
 
         const response = await server
-          .get(`/credentials/${persistedCredential.id}`)
+          .get(`/notes/${note.id}`)
           .set('Authorization', token)
           .expect(200);
 
-        expect(prismaHelper.stringfyDates(persistedCredential)).toEqual({
-          ...response.body,
-          password: expect.any(String),
-        });
+        expect(prismaHelper.stringfyDates(note)).toEqual(response.body);
       });
 
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, user.id);
+        const note = await new NoteFactory().build().persist(prisma, user.id);
 
         return server
-          .get(`/credentials/${persistedCredential.id + 1}`)
+          .get(`/notes/${note.id + 1}`)
           .set('Authorization', token)
           .expect(404);
       });
 
-      it('Should respond 403 when credential is not from the given user', async () => {
+      it('Should respond 403 when note is not from the given user', async () => {
         const server = request(app.getHttpServer());
         const authHelper = new AuthHelper(server);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, owner.id);
+        const note = await new NoteFactory().build().persist(prisma, owner.id);
 
         return server
-          .get(`/credentials/${persistedCredential.id}`)
+          .get(`/notes/${note.id}`)
           .set('Authorization', anotherUserToken)
           .expect(403);
       });
@@ -315,7 +260,7 @@ describe('Credentials (e2e)', () => {
     describe('When token is invalid', () => {
       it('Should respond 401 when token is missing', async () => {
         const response = await request(app.getHttpServer())
-          .delete(`/credentials/1`)
+          .delete(`/notes/1`)
           .expect(401);
 
         expect(response.body.message).toEqual('No token found');
@@ -326,7 +271,7 @@ describe('Credentials (e2e)', () => {
           length: { min: 60, max: 200 },
         });
         const response = await request(app.getHttpServer())
-          .delete('/credentials/1')
+          .delete('/notes/1')
           .set('Authorization', `Bearer ${invalidToken}`)
           .expect(401);
 
@@ -336,7 +281,7 @@ describe('Credentials (e2e)', () => {
       it('Should respond 401 when there is no user for the given token', async () => {
         const token = AuthHelper.generateRandomToken(jwtService);
         const response = await request(app.getHttpServer())
-          .delete('/credentials/1')
+          .delete('/notes/1')
           .set('Authorization', token)
           .expect(401);
 
@@ -345,44 +290,41 @@ describe('Credentials (e2e)', () => {
     });
 
     describe('When token is valid', () => {
-      it('Should respond 200 and delete the credential', async () => {
+      it('Should respond 200 and delete the note', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, user.id);
+        const note = await new NoteFactory().build().persist(prisma, user.id);
 
         await server
-          .delete(`/credentials/${persistedCredential.id}`)
+          .delete(`/notes/${note.id}`)
           .set('Authorization', token)
           .expect(200);
 
-        const credentials = await prisma.credential.findMany();
-        expect(credentials).toHaveLength(0);
+        const notes = await prisma.note.findMany();
+        expect(notes).toHaveLength(0);
       });
 
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, user.id);
+        const note = await new NoteFactory().build().persist(prisma, user.id);
 
         return server
-          .delete(`/credentials/${persistedCredential.id + 1}`)
+          .delete(`/notes/${note.id + 1}`)
           .set('Authorization', token)
           .expect(404);
       });
 
-      it('Should respond 403 when credential is not from the given user', async () => {
+      it('Should respond 403 when note is not from the given user', async () => {
         const server = request(app.getHttpServer());
         const authHelper = new AuthHelper(server);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
-        const persistedCredential = await credential.persist(prisma, owner.id);
+        const note = await new NoteFactory().build().persist(prisma, owner.id);
 
         return server
-          .delete(`/credentials/${persistedCredential.id}`)
+          .delete(`/notes/${note.id}`)
           .set('Authorization', anotherUserToken)
           .expect(403);
       });

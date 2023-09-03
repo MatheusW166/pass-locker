@@ -2,6 +2,7 @@ import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateCredentialDto } from '@app/credentials/dto';
+import Cryptr from 'cryptr';
 
 export class CredentialFactory extends PartialType(CreateCredentialDto) {
   constructor() {
@@ -18,8 +19,13 @@ export class CredentialFactory extends PartialType(CreateCredentialDto) {
   }
 
   async persist(prisma: PrismaService, userId: number) {
+    const cryptr = new Cryptr(process.env.JWT_SECRET);
     return prisma.credential.create({
-      data: { ...(this as CreateCredentialDto), userId },
+      data: {
+        ...(this as CreateCredentialDto),
+        password: cryptr.encrypt(this.password),
+        userId,
+      },
     });
   }
 }
