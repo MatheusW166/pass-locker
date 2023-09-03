@@ -1,26 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWifiDto } from './dto/create-wifi.dto';
-import { UpdateWifiDto } from './dto/update-wifi.dto';
+import { WifisRepository } from './wifis.repository';
 
 @Injectable()
 export class WifisService {
-  create(createWifiDto: CreateWifiDto) {
-    return 'This action adds a new wifi';
+  constructor(private readonly wifisRepository: WifisRepository) {}
+
+  async create(createWifiDto: CreateWifiDto, userId: number) {
+    return this.wifisRepository.create(createWifiDto, userId);
   }
 
-  findAll() {
-    return `This action returns all wifis`;
+  async findByIdOrThrow(id: number, userId: number) {
+    const note = await this.wifisRepository.findById(id);
+    if (!note) throw new NotFoundException();
+    if (note.userId !== userId) throw new ForbiddenException();
+    return note;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wifi`;
-  }
-
-  update(id: number, updateWifiDto: UpdateWifiDto) {
-    return `This action updates a #${id} wifi`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} wifi`;
+  async remove(id: number, userId: number) {
+    await this.findByIdOrThrow(id, userId);
+    return this.wifisRepository.remove(id);
   }
 }

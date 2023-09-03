@@ -76,23 +76,27 @@ model Card {
 }
 
 model WiFi {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  title    String
-  network  String
-  password String
-  User     User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  network   String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
 
   @@map("wifis")
 }
 
 model License {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  software String
-  version  String
-  key      String
-  User     User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  software  String
+  version   String
+  key       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
 
   @@unique([software, version, key])
   @@map("licenses")

@@ -1,34 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { WifisService } from './wifis.service';
 import { CreateWifiDto } from './dto/create-wifi.dto';
-import { UpdateWifiDto } from './dto/update-wifi.dto';
+import { UserId } from '@/decorators/auth';
+import { ParamId } from '@/decorators/validation';
 
 @Controller('wifis')
 export class WifisController {
   constructor(private readonly wifisService: WifisService) {}
 
   @Post()
-  create(@Body() createWifiDto: CreateWifiDto) {
-    return this.wifisService.create(createWifiDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.wifisService.findAll();
+  create(@Body() createWifiDto: CreateWifiDto, @UserId() userId: number) {
+    return this.wifisService.create(createWifiDto, userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wifisService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWifiDto: UpdateWifiDto) {
-    return this.wifisService.update(+id, updateWifiDto);
+  findOne(@ParamId() id: number, @UserId() userId: number) {
+    return this.wifisService.findByIdOrThrow(id, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wifisService.remove(+id);
+  remove(@ParamId() id: number, @UserId() userId: number) {
+    return this.wifisService.remove(id, userId);
   }
 }
