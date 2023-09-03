@@ -40,13 +40,18 @@ export class AuthService {
       throw new NotFoundException();
     }
 
-    if (!bcrypt.compareSync(password, user.password)) {
-      throw new UnauthorizedException();
-    }
+    this.comparePasswordsOrThrow(password, user.password);
 
     const payload = { userId: user.id };
     const token = await this.jwtService.signAsync(payload);
     return { token };
+  }
+
+  comparePasswordsOrThrow(password: string, encryptedPassword: string) {
+    if (!bcrypt.compareSync(password, encryptedPassword)) {
+      throw new UnauthorizedException();
+    }
+    return true;
   }
 
   async verifyJwt(token: string) {

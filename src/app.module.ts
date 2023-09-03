@@ -9,6 +9,9 @@ import { NotesModule } from '@app/notes/notes.module';
 import { CardsModule } from '@app/cards/cards.module';
 import { WifisModule } from '@app/wifis/wifis.module';
 import { LicensesModule } from '@app/licenses/licenses.module';
+import { AppService } from './app.service';
+import { AppRepository } from './app.repository';
+import { PrismaModule } from './app/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -19,6 +22,7 @@ import { LicensesModule } from '@app/licenses/licenses.module';
     CardsModule,
     WifisModule,
     LicensesModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [
@@ -26,6 +30,8 @@ import { LicensesModule } from '@app/licenses/licenses.module';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    AppService,
+    AppRepository,
   ],
 })
 export class AppModule {}

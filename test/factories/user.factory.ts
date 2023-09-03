@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { CreateUserDto } from '@app/users/dto';
 import { PartialType } from '@nestjs/mapped-types';
 import { SignInDto } from '@app/auth/dto';
+import bcrypt from 'bcrypt';
 
 export class UserFactory extends PartialType(CreateUserDto) {
   constructor() {
@@ -24,7 +25,12 @@ export class UserFactory extends PartialType(CreateUserDto) {
   }
 
   async persist(prisma: PrismaService) {
-    return prisma.user.create({ data: this as CreateUserDto });
+    return prisma.user.create({
+      data: {
+        ...(this as CreateUserDto),
+        password: bcrypt.hashSync(this.password, 10),
+      },
+    });
   }
 
   generateStrongPassword() {
