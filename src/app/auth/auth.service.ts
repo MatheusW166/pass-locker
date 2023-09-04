@@ -6,14 +6,15 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '@app/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { SignInDto, SignUpDto } from './dto';
+import { BcryptService } from '@app/cryptr/bcrypt.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly bcryptService: BcryptService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -22,7 +23,7 @@ export class AuthService {
 
     if (userFound) throw new ConflictException();
 
-    const hashedPass = bcrypt.hashSync(password, 10);
+    const hashedPass = this.bcryptService.hash(password);
     const user = await this.usersService.create({
       ...signUpDto,
       password: hashedPass,
@@ -48,7 +49,7 @@ export class AuthService {
   }
 
   comparePasswordsOrThrow(password: string, encryptedPassword: string) {
-    if (!bcrypt.compareSync(password, encryptedPassword)) {
+    if (!this.bcryptService.compare(password, encryptedPassword)) {
       throw new UnauthorizedException();
     }
     return true;

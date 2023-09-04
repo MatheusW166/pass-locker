@@ -6,11 +6,15 @@ import {
 } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { CardsRepository } from './cards.repository';
-import Cryptr from 'cryptr';
+import { CryptrService } from '@app/cryptr/cryptr.service';
+import { Card } from '@prisma/client';
 
 @Injectable()
 export class CardsService {
-  constructor(private readonly cardsRepository: CardsRepository) {}
+  constructor(
+    private readonly cardsRepository: CardsRepository,
+    private readonly cryptr: CryptrService,
+  ) {}
 
   async create(createCardDto: CreateCardDto, userId: number) {
     const card = await this.cardsRepository.findByTitleAndUserId(
@@ -18,33 +22,35 @@ export class CardsService {
       userId,
     );
     if (card) throw new ConflictException();
-
-    const { code, number } = createCardDto;
-    const crypt = new Cryptr(process.env.JWT_SECRET);
-    createCardDto = {
-      ...createCardDto,
-      code: crypt.encrypt(code),
-      number: crypt.encrypt(number),
-    };
-    return this.cardsRepository.create(createCardDto, userId);
+    const encryptedCard = this.encryptCardFields(createCardDto);
+    return this.cardsRepository.create(encryptedCard, userId);
   }
 
   async findByIdOrThrow(id: number, userId: number) {
     const card = await this.cardsRepository.findById(id);
     if (!card) throw new NotFoundException();
     if (card.userId !== userId) throw new ForbiddenException();
-
-    const crypt = new Cryptr(process.env.JWT_SECRET);
-    const { code, number } = card;
-    return {
-      ...card,
-      code: crypt.decrypt(code),
-      number: crypt.decrypt(number),
-    };
+    return this.decryptCardFields(card);
   }
 
   async remove(id: number, userId: number) {
     await this.findByIdOrThrow(id, userId);
     return this.cardsRepository.remove(id);
+  }
+
+  encryptCardFields(card: CreateCardDto) {
+    return {
+      ...card,
+      code: this.cryptr.encrypt(card.code),
+      number: this.cryptr.encrypt(card.number),
+    };
+  }
+
+  decryptCardFields(card: Card) {
+    return {
+      ...card,
+      code: this.cryptr.decrypt(card.code),
+      number: this.cryptr.decrypt(card.number),
+    };
   }
 }

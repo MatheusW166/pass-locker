@@ -10,7 +10,8 @@ import { CardsModule } from '@app/cards/cards.module';
 import { WifisModule } from '@app/wifis/wifis.module';
 import { AppService } from './app.service';
 import { AppRepository } from './app.repository';
-import { PrismaModule } from './app/prisma/prisma.module';
+import { PrismaModule } from '@app/prisma/prisma.module';
+import { CryptrModule } from '@app/cryptr/cryptr.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PrismaModule } from './app/prisma/prisma.module';
     CardsModule,
     WifisModule,
     PrismaModule,
+    CryptrModule,
   ],
   controllers: [AppController],
   providers: [
