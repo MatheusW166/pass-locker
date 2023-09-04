@@ -76,7 +76,7 @@ describe('NotesController (e2e)', () => {
       it('Should respond 201 and create a note', async () => {
         const server = request(app.getHttpServer());
         const [token] = await new AuthHelper(server).generateValidToken();
-        const note = new NoteFactory().build();
+        const note = new NoteFactory();
 
         const response = await server
           .post('/notes')
@@ -86,7 +86,7 @@ describe('NotesController (e2e)', () => {
 
         const notes = await prisma.note.findMany({});
         expect(notes).toHaveLength(1);
-        expect(prismaHelper.stringfyDates(notes[0])).toEqual(response.body);
+        expect(PrismaHelper.stringfyDates(notes[0])).toEqual(response.body);
       });
 
       it('Should respond 201 and allow two users to create the same note', async () => {
@@ -94,7 +94,7 @@ describe('NotesController (e2e)', () => {
         const authHelper = new AuthHelper(server);
         const [token1] = await authHelper.generateValidToken();
         const [token2] = await authHelper.generateValidToken();
-        const note = new NoteFactory().build();
+        const note = new NoteFactory();
 
         await server
           .post('/notes')
@@ -116,7 +116,7 @@ describe('NotesController (e2e)', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const note = new NoteFactory().build();
+          const note = new NoteFactory();
 
           delete note.title;
 
@@ -139,7 +139,7 @@ describe('NotesController (e2e)', () => {
         it('Should respond 400 when text is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const note = new NoteFactory().build();
+          const note = new NoteFactory();
 
           delete note.text;
 
@@ -166,7 +166,7 @@ describe('NotesController (e2e)', () => {
           const [token, user] = await new AuthHelper(
             server,
           ).generateValidToken();
-          const note = new NoteFactory().build();
+          const note = new NoteFactory();
           await note.persist(prisma, user.id);
 
           await server
@@ -219,20 +219,20 @@ describe('NotesController (e2e)', () => {
       it('Should respond 200 and the user note', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, user.id);
+        const note = await new NoteFactory().persist(prisma, user.id);
 
         const response = await server
           .get(`/notes/${note.id}`)
           .set('Authorization', token)
           .expect(200);
 
-        expect(prismaHelper.stringfyDates(note)).toEqual(response.body);
+        expect(PrismaHelper.stringfyDates(note)).toEqual(response.body);
       });
 
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, user.id);
+        const note = await new NoteFactory().persist(prisma, user.id);
 
         return server
           .get(`/notes/${note.id + 1}`)
@@ -246,7 +246,7 @@ describe('NotesController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, owner.id);
+        const note = await new NoteFactory().persist(prisma, owner.id);
 
         return server
           .get(`/notes/${note.id}`)
@@ -293,7 +293,7 @@ describe('NotesController (e2e)', () => {
       it('Should respond 200 and delete the note', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, user.id);
+        const note = await new NoteFactory().persist(prisma, user.id);
 
         await server
           .delete(`/notes/${note.id}`)
@@ -307,7 +307,7 @@ describe('NotesController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, user.id);
+        const note = await new NoteFactory().persist(prisma, user.id);
 
         return server
           .delete(`/notes/${note.id + 1}`)
@@ -321,7 +321,7 @@ describe('NotesController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const note = await new NoteFactory().build().persist(prisma, owner.id);
+        const note = await new NoteFactory().persist(prisma, owner.id);
 
         return server
           .delete(`/notes/${note.id}`)

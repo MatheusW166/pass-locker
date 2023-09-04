@@ -76,7 +76,7 @@ describe('CardsController (e2e)', () => {
       it('Should respond 201 and create a card', async () => {
         const server = request(app.getHttpServer());
         const [token] = await new AuthHelper(server).generateValidToken();
-        const card = new CardFactory().build();
+        const card = new CardFactory();
 
         const response = await server
           .post('/cards')
@@ -86,10 +86,7 @@ describe('CardsController (e2e)', () => {
 
         const cards = await prisma.card.findMany({});
         expect(cards).toHaveLength(1);
-        expect(prismaHelper.stringfyDates(cards[0])).toEqual({
-          ...response.body,
-          expDate: expect.any(Date),
-        });
+        expect(PrismaHelper.stringfyDates(cards[0])).toEqual(response.body);
       });
 
       it('Should respond 201 and allow two users to create the same card', async () => {
@@ -97,7 +94,7 @@ describe('CardsController (e2e)', () => {
         const authHelper = new AuthHelper(server);
         const [token1] = await authHelper.generateValidToken();
         const [token2] = await authHelper.generateValidToken();
-        const card = new CardFactory().build();
+        const card = new CardFactory();
 
         await server
           .post('/cards')
@@ -119,7 +116,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.title;
 
@@ -142,7 +139,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when displayName is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.displayName;
 
@@ -165,7 +162,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when code is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.code;
 
@@ -188,7 +185,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when number is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.number;
 
@@ -211,7 +208,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when expDate is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.expDate;
 
@@ -233,7 +230,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when isVirtual is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.isVirtual;
 
@@ -253,7 +250,7 @@ describe('CardsController (e2e)', () => {
         it('Should respond 400 when type is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
 
           delete card.type;
 
@@ -279,7 +276,7 @@ describe('CardsController (e2e)', () => {
           const [token, user] = await new AuthHelper(
             server,
           ).generateValidToken();
-          const card = new CardFactory().build();
+          const card = new CardFactory();
           await card.persist(prisma, user.id);
 
           await server
@@ -332,16 +329,15 @@ describe('CardsController (e2e)', () => {
       it('Should respond 200 and the user card', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, user.id);
+        const card = await new CardFactory().persist(prisma, user.id);
 
         const response = await server
           .get(`/cards/${card.id}`)
           .set('Authorization', token)
           .expect(200);
 
-        expect(prismaHelper.stringfyDates(card)).toEqual({
+        expect(PrismaHelper.stringfyDates(card)).toEqual({
           ...response.body,
-          expDate: expect.any(Date),
           code: expect.any(String),
           number: expect.any(String),
         });
@@ -350,7 +346,7 @@ describe('CardsController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, user.id);
+        const card = await new CardFactory().persist(prisma, user.id);
 
         return server
           .get(`/cards/${card.id + 1}`)
@@ -364,7 +360,7 @@ describe('CardsController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, owner.id);
+        const card = await new CardFactory().persist(prisma, owner.id);
 
         return server
           .get(`/cards/${card.id}`)
@@ -411,7 +407,7 @@ describe('CardsController (e2e)', () => {
       it('Should respond 200 and delete the card', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, user.id);
+        const card = await new CardFactory().persist(prisma, user.id);
 
         await server
           .delete(`/cards/${card.id}`)
@@ -425,7 +421,7 @@ describe('CardsController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, user.id);
+        const card = await new CardFactory().persist(prisma, user.id);
 
         return server
           .delete(`/cards/${card.id + 1}`)
@@ -439,7 +435,7 @@ describe('CardsController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const card = await new CardFactory().build().persist(prisma, owner.id);
+        const card = await new CardFactory().persist(prisma, owner.id);
 
         return server
           .delete(`/cards/${card.id}`)

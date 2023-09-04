@@ -15,19 +15,29 @@ export class PrismaHelper {
     return this;
   }
 
-  stringfyDates(props: any & { createdAt: Date; updatedAt: Date }) {
-    return {
-      ...props,
-      createdAt: props.createdAt.toISOString(),
-      updatedAt: props.updatedAt.toISOString(),
-    };
+  private static isDateString(dateString: any) {
+    if (typeof dateString !== 'string') return false;
+    const timestamp = Date.parse(dateString);
+    return !isNaN(timestamp);
+  }
+
+  static stringfyDates(props: any & { createdAt: Date; updatedAt: Date }) {
+    const propsCopy = { ...props };
+    for (const key in propsCopy) {
+      const value = propsCopy[key];
+      if (value instanceof Date) propsCopy[key] = value.toISOString();
+    }
+    return propsCopy;
   }
 
   static parseDates(props: any & { createdAt: string; updatedAt: string }) {
-    return {
-      ...props,
-      createdAt: new Date(props.createdAt),
-      updatedAt: new Date(props.updatedAt),
-    };
+    const propsCopy = { ...props };
+    for (const key in propsCopy) {
+      const value = propsCopy[key];
+      if (PrismaHelper.isDateString(value)) {
+        propsCopy[key] = new Date(value);
+      }
+    }
+    return propsCopy;
   }
 }

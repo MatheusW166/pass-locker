@@ -76,7 +76,7 @@ describe('WifisController (e2e)', () => {
       it('Should respond 201 and create a wifi', async () => {
         const server = request(app.getHttpServer());
         const [token] = await new AuthHelper(server).generateValidToken();
-        const wifi = new WifiFactory().build();
+        const wifi = new WifiFactory();
 
         const response = await server
           .post('/wifis')
@@ -86,14 +86,14 @@ describe('WifisController (e2e)', () => {
 
         const wifis = await prisma.wiFi.findMany({});
         expect(wifis).toHaveLength(1);
-        expect(prismaHelper.stringfyDates(wifis[0])).toEqual(response.body);
+        expect(PrismaHelper.stringfyDates(wifis[0])).toEqual(response.body);
       });
 
       describe('Bad formatted body', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const wifi = new WifiFactory().build();
+          const wifi = new WifiFactory();
 
           delete wifi.title;
 
@@ -116,7 +116,7 @@ describe('WifisController (e2e)', () => {
         it('Should respond 400 when network is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const wifi = new WifiFactory().build();
+          const wifi = new WifiFactory();
 
           delete wifi.network;
 
@@ -139,7 +139,7 @@ describe('WifisController (e2e)', () => {
         it('Should respond 400 when password is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const wifi = new WifiFactory().build();
+          const wifi = new WifiFactory();
 
           delete wifi.password;
 
@@ -199,20 +199,20 @@ describe('WifisController (e2e)', () => {
       it('Should respond 200 and the user wifi', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, user.id);
+        const wifi = await new WifiFactory().persist(prisma, user.id);
 
         const response = await server
           .get(`/wifis/${wifi.id}`)
           .set('Authorization', token)
           .expect(200);
 
-        expect(prismaHelper.stringfyDates(wifi)).toEqual(response.body);
+        expect(PrismaHelper.stringfyDates(wifi)).toEqual(response.body);
       });
 
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, user.id);
+        const wifi = await new WifiFactory().persist(prisma, user.id);
 
         return server
           .get(`/wifis/${wifi.id + 1}`)
@@ -226,7 +226,7 @@ describe('WifisController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, owner.id);
+        const wifi = await new WifiFactory().persist(prisma, owner.id);
 
         return server
           .get(`/wifis/${wifi.id}`)
@@ -273,7 +273,7 @@ describe('WifisController (e2e)', () => {
       it('Should respond 200 and delete the wifi', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, user.id);
+        const wifi = await new WifiFactory().persist(prisma, user.id);
 
         await server
           .delete(`/wifis/${wifi.id}`)
@@ -287,7 +287,7 @@ describe('WifisController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, user.id);
+        const wifi = await new WifiFactory().persist(prisma, user.id);
 
         return server
           .delete(`/wifis/${wifi.id + 1}`)
@@ -301,7 +301,7 @@ describe('WifisController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const wifi = await new WifiFactory().build().persist(prisma, owner.id);
+        const wifi = await new WifiFactory().persist(prisma, owner.id);
 
         return server
           .delete(`/wifis/${wifi.id}`)

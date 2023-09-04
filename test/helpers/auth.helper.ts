@@ -16,7 +16,7 @@ export class AuthHelper {
   }
 
   async generateValidToken(): Promise<[string, User]> {
-    const user = new UserFactory().build();
+    const user = new UserFactory();
     const response = await this.request.post('/auth/signup').send(user);
     const token = await this.authenticateUser(user);
     return [token, PrismaHelper.parseDates(response.body)];

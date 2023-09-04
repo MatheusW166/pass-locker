@@ -76,7 +76,7 @@ describe('CredentialsController (e2e)', () => {
       it('Should respond 201 and create a credential', async () => {
         const server = request(app.getHttpServer());
         const [token] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
 
         const response = await server
           .post('/credentials')
@@ -86,7 +86,7 @@ describe('CredentialsController (e2e)', () => {
 
         const credentials = await prisma.credential.findMany({});
         expect(credentials).toHaveLength(1);
-        expect(prismaHelper.stringfyDates(credentials[0])).toEqual(
+        expect(PrismaHelper.stringfyDates(credentials[0])).toEqual(
           response.body,
         );
       });
@@ -96,7 +96,7 @@ describe('CredentialsController (e2e)', () => {
         const authHelper = new AuthHelper(server);
         const [token1] = await authHelper.generateValidToken();
         const [token2] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
 
         await server
           .post('/credentials')
@@ -118,7 +118,7 @@ describe('CredentialsController (e2e)', () => {
         it('Should respond 400 when title is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const credential = new CredentialFactory();
 
           delete credential.title;
 
@@ -141,7 +141,7 @@ describe('CredentialsController (e2e)', () => {
         it('Should respond 400 when username is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const credential = new CredentialFactory();
 
           delete credential.username;
 
@@ -164,7 +164,7 @@ describe('CredentialsController (e2e)', () => {
         it('Should respond 400 when url is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const credential = new CredentialFactory();
 
           delete credential.url;
 
@@ -188,7 +188,7 @@ describe('CredentialsController (e2e)', () => {
         it('Should respond 400 when password is missing', async () => {
           const server = request(app.getHttpServer());
           const [token] = await new AuthHelper(server).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const credential = new CredentialFactory();
 
           delete credential.password;
 
@@ -215,7 +215,7 @@ describe('CredentialsController (e2e)', () => {
           const [token, user] = await new AuthHelper(
             server,
           ).generateValidToken();
-          const credential = new CredentialFactory().build();
+          const credential = new CredentialFactory();
           await credential.persist(prisma, user.id);
 
           await server
@@ -268,7 +268,7 @@ describe('CredentialsController (e2e)', () => {
       it('Should respond 200 and the user credential', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, user.id);
 
         const response = await server
@@ -276,7 +276,7 @@ describe('CredentialsController (e2e)', () => {
           .set('Authorization', token)
           .expect(200);
 
-        expect(prismaHelper.stringfyDates(persistedCredential)).toEqual({
+        expect(PrismaHelper.stringfyDates(persistedCredential)).toEqual({
           ...response.body,
           password: expect.any(String),
         });
@@ -285,7 +285,7 @@ describe('CredentialsController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, user.id);
 
         return server
@@ -300,7 +300,7 @@ describe('CredentialsController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, owner.id);
 
         return server
@@ -348,7 +348,7 @@ describe('CredentialsController (e2e)', () => {
       it('Should respond 200 and delete the credential', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, user.id);
 
         await server
@@ -363,7 +363,7 @@ describe('CredentialsController (e2e)', () => {
       it('Should respond 404 when id does not exist', async () => {
         const server = request(app.getHttpServer());
         const [token, user] = await new AuthHelper(server).generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, user.id);
 
         return server
@@ -378,7 +378,7 @@ describe('CredentialsController (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, owner] = await authHelper.generateValidToken();
         const [anotherUserToken] = await authHelper.generateValidToken();
-        const credential = new CredentialFactory().build();
+        const credential = new CredentialFactory();
         const persistedCredential = await credential.persist(prisma, owner.id);
 
         return server

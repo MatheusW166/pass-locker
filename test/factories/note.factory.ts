@@ -1,11 +1,16 @@
 import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
-import { PartialType } from '@nestjs/mapped-types';
 import { CreateNoteDto } from '@app/notes/dto/create-note.dto';
+import { IFactory } from './ifactory.factory';
+import { Note } from '@prisma/client';
 
-export class NoteFactory extends PartialType(CreateNoteDto) {
+export class NoteFactory
+  extends CreateNoteDto
+  implements IFactory<CreateNoteDto, Note>
+{
   constructor() {
     super();
+    this.build();
   }
 
   build(props?: Partial<CreateNoteDto>) {
@@ -15,6 +20,8 @@ export class NoteFactory extends PartialType(CreateNoteDto) {
   }
 
   async persist(prisma: PrismaService, userId: number) {
-    return prisma.note.create({ data: { ...(this as CreateNoteDto), userId } });
+    return prisma.note.create({
+      data: { ...(this as CreateNoteDto), userId },
+    });
   }
 }

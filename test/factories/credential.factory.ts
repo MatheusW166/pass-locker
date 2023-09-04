@@ -1,12 +1,17 @@
 import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
-import { PartialType } from '@nestjs/mapped-types';
 import { CreateCredentialDto } from '@app/credentials/dto';
 import Cryptr from 'cryptr';
+import { IFactory } from './ifactory.factory';
+import { Credential } from '@prisma/client';
 
-export class CredentialFactory extends PartialType(CreateCredentialDto) {
+export class CredentialFactory
+  extends CreateCredentialDto
+  implements IFactory<CreateCredentialDto, Credential>
+{
   constructor() {
     super();
+    this.build();
   }
 
   build(props?: Partial<CreateCredentialDto>) {
@@ -14,7 +19,6 @@ export class CredentialFactory extends PartialType(CreateCredentialDto) {
     this.url = props?.url ?? faker.internet.url();
     this.username = props?.username ?? faker.internet.userName();
     this.password = props?.password ?? faker.internet.password();
-
     return this;
   }
 

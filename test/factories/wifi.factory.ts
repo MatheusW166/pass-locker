@@ -1,11 +1,16 @@
 import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
-import { PartialType } from '@nestjs/mapped-types';
 import { CreateWifiDto } from '@app/wifis/dto/create-wifi.dto';
+import { IFactory } from './ifactory.factory';
+import { WiFi } from '@prisma/client';
 
-export class WifiFactory extends PartialType(CreateWifiDto) {
+export class WifiFactory
+  extends CreateWifiDto
+  implements IFactory<CreateWifiDto, WiFi>
+{
   constructor() {
     super();
+    this.build();
   }
 
   build(props?: Partial<CreateWifiDto>) {
@@ -16,6 +21,8 @@ export class WifiFactory extends PartialType(CreateWifiDto) {
   }
 
   async persist(prisma: PrismaService, userId: number) {
-    return prisma.wiFi.create({ data: { ...(this as CreateWifiDto), userId } });
+    return prisma.wiFi.create({
+      data: { ...(this as CreateWifiDto), userId },
+    });
   }
 }

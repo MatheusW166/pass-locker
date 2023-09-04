@@ -48,14 +48,14 @@ describe('AppController (e2e)', () => {
     it('Should respond 202 and delete all user data', async () => {
       const server = request(app.getHttpServer());
 
-      const user = new UserFactory().build();
+      const user = new UserFactory();
       const persistedUser = await user.persist(prisma);
       const token = await new AuthHelper(server).authenticateUser(user);
 
-      await new CredentialFactory().build().persist(prisma, persistedUser.id);
-      await new CardFactory().build().persist(prisma, persistedUser.id);
-      await new NoteFactory().build().persist(prisma, persistedUser.id);
-      await new WifiFactory().build().persist(prisma, persistedUser.id);
+      await new CredentialFactory().persist(prisma, persistedUser.id);
+      await new CardFactory().persist(prisma, persistedUser.id);
+      await new NoteFactory().persist(prisma, persistedUser.id);
+      await new WifiFactory().persist(prisma, persistedUser.id);
 
       await server
         .post('/erase')
@@ -79,14 +79,14 @@ describe('AppController (e2e)', () => {
     it('Should respond 401 if password is wrong', async () => {
       const server = request(app.getHttpServer());
 
-      const user = new UserFactory().build();
+      const user = new UserFactory();
       const persistedUser = await user.persist(prisma);
       const token = await new AuthHelper(server).authenticateUser(user);
 
-      await new CredentialFactory().build().persist(prisma, persistedUser.id);
-      await new CardFactory().build().persist(prisma, persistedUser.id);
-      await new NoteFactory().build().persist(prisma, persistedUser.id);
-      await new WifiFactory().build().persist(prisma, persistedUser.id);
+      await new CredentialFactory().persist(prisma, persistedUser.id);
+      await new CardFactory().persist(prisma, persistedUser.id);
+      await new NoteFactory().persist(prisma, persistedUser.id);
+      await new WifiFactory().persist(prisma, persistedUser.id);
 
       await server
         .post('/erase')

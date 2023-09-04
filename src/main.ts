@@ -10,17 +10,13 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('DrivenPass')
-    .setDescription(
-      'Application that stores your credentials and passwords securely',
-    )
+    .setDescription('Store your passwords securely')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  await app.listen(PORT, () =>
-    console.log(`🚀 Server is up and running on PORT ${PORT}`),
-  );
+  await app.listen(PORT, () => console.log(`🚀 Running on PORT ${PORT}`));
 }
 bootstrap();

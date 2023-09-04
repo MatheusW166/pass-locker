@@ -1,13 +1,17 @@
 import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
-import { PartialType } from '@nestjs/mapped-types';
 import Cryptr from 'cryptr';
 import { CreateCardDto } from '@app/cards/dto/create-card.dto';
-import { CardType } from '@prisma/client';
+import { Card, CardType } from '@prisma/client';
+import { IFactory } from './ifactory.factory';
 
-export class CardFactory extends PartialType(CreateCardDto) {
+export class CardFactory
+  extends CreateCardDto
+  implements IFactory<CreateCardDto, Card>
+{
   constructor() {
     super();
+    this.build();
   }
 
   build(props?: Partial<CreateCardDto>) {

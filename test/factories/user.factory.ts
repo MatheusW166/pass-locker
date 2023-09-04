@@ -1,13 +1,18 @@
 import { PrismaService } from '@app/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
 import { CreateUserDto } from '@app/users/dto';
-import { PartialType } from '@nestjs/mapped-types';
 import { SignInDto } from '@app/auth/dto';
 import bcrypt from 'bcrypt';
+import { IFactory } from './ifactory.factory';
+import { User } from '@prisma/client';
 
-export class UserFactory extends PartialType(CreateUserDto) {
+export class UserFactory
+  extends CreateUserDto
+  implements IFactory<CreateUserDto, User>
+{
   constructor() {
     super();
+    this.build();
   }
 
   build(props?: Partial<CreateUserDto>) {

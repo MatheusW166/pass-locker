@@ -37,7 +37,7 @@ describe('AuthController (e2e)', () => {
   describe('/signup (POST)', () => {
     it('Should create an user and respond 201', async () => {
       const userFactory = new UserFactory();
-      const createUserDto = userFactory.build();
+      const createUserDto = userFactory;
 
       const response = await request(app.getHttpServer())
         .post('/auth/signup')
@@ -47,7 +47,7 @@ describe('AuthController (e2e)', () => {
       const users = await prisma.user.findMany();
       expect(users).toHaveLength(1);
 
-      const user = prismaHelper.stringfyDates(users[0]);
+      const user = PrismaHelper.stringfyDates(users[0]);
       delete user.password;
 
       expect(user).toEqual(response.body);
@@ -55,7 +55,7 @@ describe('AuthController (e2e)', () => {
 
     describe('Bad formatted body', () => {
       it('Should respond 400 when name is missing', async () => {
-        const userWrongFormated = new UserFactory().build();
+        const userWrongFormated = new UserFactory();
         delete userWrongFormated.name;
 
         const response = await request(app.getHttpServer())
@@ -74,7 +74,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 400 when email is missing', async () => {
-        const userWrongFormated = new UserFactory().build();
+        const userWrongFormated = new UserFactory();
         delete userWrongFormated.email;
 
         const response = await request(app.getHttpServer())
@@ -93,7 +93,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 400 when password is missing', async () => {
-        const userWrongFormated = new UserFactory().build();
+        const userWrongFormated = new UserFactory();
         delete userWrongFormated.password;
 
         const response = await request(app.getHttpServer())
@@ -114,7 +114,7 @@ describe('AuthController (e2e)', () => {
 
     describe('Right formatted body', () => {
       it('Should respond 400 when email is invalid', async () => {
-        const userInvalidEmail = new UserFactory().build();
+        const userInvalidEmail = new UserFactory();
         userInvalidEmail.email = userInvalidEmail.email.split('@')[0];
 
         const response = await request(app.getHttpServer())
@@ -128,7 +128,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 400 when password is weak', async () => {
-        const userWeakPassword = new UserFactory().build();
+        const userWeakPassword = new UserFactory();
         userWeakPassword.password = faker.internet.password({ length: 9 });
 
         const response = await request(app.getHttpServer())
@@ -144,7 +144,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 409 when user already exists', async () => {
-        const user = new UserFactory().build();
+        const user = new UserFactory();
         await user.persist(prisma);
 
         await request(app.getHttpServer())
@@ -160,7 +160,7 @@ describe('AuthController (e2e)', () => {
 
   describe('/signin (POST)', () => {
     it('Should respond with the jwt token and status 200', async () => {
-      const user = new UserFactory().build();
+      const user = new UserFactory();
       const server = request(app.getHttpServer());
       await server.post('/auth/signup').send(user);
 
@@ -174,7 +174,7 @@ describe('AuthController (e2e)', () => {
 
     describe('Bad formatted body', () => {
       it('Should respond 400 when email is missing', async () => {
-        const userWrongFormated = new UserFactory().build();
+        const userWrongFormated = new UserFactory();
         delete userWrongFormated.email;
 
         const response = await request(app.getHttpServer())
@@ -191,7 +191,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 400 when password is missing', async () => {
-        const userWrongFormated = new UserFactory().build();
+        const userWrongFormated = new UserFactory();
         delete userWrongFormated.password;
 
         const response = await request(app.getHttpServer())
@@ -210,7 +210,7 @@ describe('AuthController (e2e)', () => {
 
     describe('Right formatted body', () => {
       it('Should respond 400 when email is invalid', async () => {
-        const userInvalidEmail = new UserFactory().build();
+        const userInvalidEmail = new UserFactory();
         userInvalidEmail.email = userInvalidEmail.email.split('@')[0];
 
         const response = await request(app.getHttpServer())
@@ -222,7 +222,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 400 when password is weak', async () => {
-        const userWeakPassword = new UserFactory().build();
+        const userWeakPassword = new UserFactory();
         userWeakPassword.password = faker.internet.password({ length: 9 });
 
         const response = await request(app.getHttpServer())
@@ -236,7 +236,7 @@ describe('AuthController (e2e)', () => {
       });
 
       it('Should respond 401 when password is wrong', async () => {
-        const user = new UserFactory().build();
+        const user = new UserFactory();
         const server = request(app.getHttpServer());
         await server.post('/auth/signup').send(user);
 
