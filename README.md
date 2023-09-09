@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/MatheusW166/pass-locker-backend/blob/main/LICENSE)
+
 # Pass Locker
 
 ## Sobre
