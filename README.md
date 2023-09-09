@@ -44,7 +44,7 @@ npm run test:migrate
 ```
 - Rodar testes de integração
 ```bash
-npm run test
+npm run test:e2e
 ```
 - Rodar em modo de desenvolvimento
 ```bash
