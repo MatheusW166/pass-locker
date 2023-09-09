@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('DrivenPass')
+    .setTitle('PassLocker')
     .setDescription('Store your passwords securely')
     .setVersion('1.0')
     .build();
