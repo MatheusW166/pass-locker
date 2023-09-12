@@ -2,11 +2,9 @@
 
 # Pass Locker
 
-## Sobre
-
 Pass Locker é uma aplicação para guardar dados sensíveis de vários tipos, como senhas de wifi, credenciais de acesso, dados de cartão de crédito e anotações.
 
-## Documentação da API
+## API
 
 Acesse a documentação [aqui](https://pass-locker.onrender.com/api).
 
