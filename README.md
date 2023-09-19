@@ -20,34 +20,41 @@ Acesse a documentação [aqui](https://pass-locker.onrender.com/api).
 
 ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white) ![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)
 
-## Como utilizar
+## Rodando localmente
 
 Pré requisitos: é necessário ter instalado o postgresql, nestjs/cli e nodejs na última versão.
 
-- Clonar repositório
+#### Clonar repositório
 
 ```bash
 git clone https://github.com/MatheusW166/postify-backend.git
 ```
-- Instalar dependências
+
+#### Instalar dependências
+
 ```bash
 npm install
 ```
-- Configurar .env.development e .env.test, seguindo o exemplo em [.env.example](https://github.com/MatheusW166/pass-locker-backend/blob/main/.env.example)
-- Migrar base de dados de desenvolvimento
+
+#### Criando o banco de dados
+
+- Crie os arquivos .env.development e .env.test, seguindo o exemplo em [.env.example](https://github.com/MatheusW166/pass-locker-backend/blob/main/.env.example)
+- Rode os comandos a seguir para criar os bancos de dados de desenvolvimento e teste
+
 ```bash
 npm run dev:migrate
-```
-- Migrar base de dados de teste
-```bash
 npm run test:migrate
 ```
-- Rodar testes de integração
+
+#### Testando a aplicação
+
 ```bash
 npm run test:e2e
 ```
-- Rodar em modo de desenvolvimento
+
+#### Rodando em modo de desenvolvimento
 ```bash
 npm run start:dev
 ```
-Divirta-se! 😁
+
+🚀 Divirta-se!
