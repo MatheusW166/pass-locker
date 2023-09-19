@@ -22,7 +22,7 @@ Acesse a documentação [aqui](https://pass-locker.onrender.com/api).
 
 ## Rodando localmente
 
-Pré requisitos: é necessário ter instalado o postgresql, nestjs/cli e nodejs na última versão.
+Pré-requisitos: é necessário ter instalado o postgresql, nestjs/cli e nodejs na última versão.
 
 #### Clonar repositório
 
