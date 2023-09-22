@@ -27,7 +27,7 @@ Pré-requisitos: é necessário ter instalado o postgresql, nestjs/cli e nodejs 
 #### Clonar repositório
 
 ```bash
-git clone https://github.com/MatheusW166/postify-backend.git
+git clone https://github.com/MatheusW166/pass-locker-backend.git
 ```
 
 #### Instalar dependências
